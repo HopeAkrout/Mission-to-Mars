@@ -1,6 +1,7 @@
 # additional files to ignore
 /.ipynb_checkpoints
 practice.ipynb
+Mission_to_Mars_Challenge_starter_code.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
