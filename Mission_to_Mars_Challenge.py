@@ -124,7 +124,6 @@ for item in items:
     browser.visit(hemisphere_url)
     image_soup = soup(browser.html, 'html.parser')
     image_url = hemispheres_url + image_soup.find_all('a', href=True, text='Sample')[0]['href']
-    # image_url = browser.links.find_by_partial_text('Sample')
     hemisphere_image_urls.append(Hemisphere(title, image_url))
 
 

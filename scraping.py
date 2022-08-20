@@ -9,9 +9,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 # initialize browser, create dictionary and end WebDriver and return the scraped data
 
 def scrape_all():
+
     # Initiate headless driver for deployment
     executable_path = {'executable_path': ChromeDriverManager().install()}
     browser = Browser('chrome', **executable_path, headless=True)
+    hemisphere_image_urls, hemisphere_image_titles = fetch_hemisphere_data(browser)
 
     news_title, news_paragraph = mars_news(browser)
 
@@ -22,11 +24,13 @@ def scrape_all():
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
         "last_modified": dt.datetime.now(),
-        "hemisphere_images": hemisphere_images_urls()
+        "hemisphere_images": hemisphere_image_urls,
+        "hemisphere_titles": hemisphere_image_titles
     }
 
     # Stop webdriver and return data
     browser.quit()
+    
     return data
 
 
@@ -49,10 +53,13 @@ def mars_news(browser):
     # Add try/except for error handling
     try:
         slide_elem = news_soup.select_one('div.list_text')
+       
         # Use the parent element to find the first 'a' tag and save it as 'news_title'
         news_title = slide_elem.find('div', class_='content_title').get_text()
+        
         # Use the parent element to find the paragraph text
         news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
+ 
 
     except AttributeError:
         return None, None
@@ -110,7 +117,7 @@ def mars_facts():
 
 # ### Hemispheres
 
-def hemisphere_images_urls():
+def fetch_hemisphere_data(browser):
 
     # Use browser to visit the URL 
 
@@ -120,10 +127,10 @@ def hemisphere_images_urls():
     hemispheres_soup = soup(browser.html, 'html.parser')
 
 
-
     # Create a list to hold the images and titles.
 
     hemisphere_image_urls = []
+    hemisphere_image_titles = []
 
     # Write code to retrieve the image urls and titles for each hemisphere.
 
@@ -140,18 +147,21 @@ def hemisphere_images_urls():
         browser.visit(hemisphere_url)
         image_soup = soup(browser.html, 'html.parser')
         image_url = hemispheres_url + image_soup.find_all('a', href=True, text='Sample')[0]['href']
-        hemisphere_image_urls.append(Hemisphere(title, image_url))
-
-
+        hemisphere_image_urls.append(image_url)
+        hemisphere_image_titles.append(title)
+    
+    
     # Print the list that holds the dictionary of each image url and title.
-    for hemisphere in hemisphere_image_urls:
-        print(hemisphere.title)
-        print(hemisphere.url)
-
-    return hemisphere_images_urls
+    for i in range(0, len(hemisphere_image_urls)):
+        print(hemisphere_image_urls[i])
+        print(hemisphere_image_titles[i])
 
     # Quit the browser
-    browser.quit()
+    # browser.quit()
+
+    return hemisphere_image_urls, hemisphere_image_titles
+
+
 
 
 # run script
